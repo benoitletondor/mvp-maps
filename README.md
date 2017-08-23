@@ -42,12 +42,12 @@ public class MainActivity extends BaseMVPMapActivity<MainViewPresenter, MainView
 	}
 
 	@SuppressLint("MissingSuperCall")
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState, R.id.map_container);
-        setContentView(R.layout.activity_main);
-    }
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState, R.id.map_container);
+		setContentView(R.layout.activity_main);
+	}
 }
 ```
 
@@ -57,52 +57,52 @@ And here's how the `MapPresenter` looks like:
 public class MainViewPresenterImpl extends BaseMapPresenterImpl<MainView> implements MainViewPresenter
 {
 	/**
-     * Reference of the current map shown (don't forget to null it when onStop is called !)
-     */
-    @Nullable
-    private GoogleMap mMap;
-
-    @Override
-    public void onStop()
-    {
-        // IMPORTANT: Don't forget to clear any instance of GoogleMap you have here to avoid leaks.
-        // It will be recreated at next view start
-        mMap = null;
-
-        super.onStop();
-    }
+	* Reference of the current map shown (don't forget to null it when onStop is called !)
+	*/
+	@Nullable
+	private GoogleMap mMap;
 
 	@Override
-    public void onMapAvailable(@NonNull GoogleMap map)
-    {
-        // You can store the map to perform actions on it later, like adding pins
-        // IMPORTANT: Don't forget to clear it when onStop is called !
-        mMap = map;
-    }
+	public void onStop()
+	{
+		// IMPORTANT: Don't forget to clear any instance of GoogleMap you have here to avoid leaks.
+		// It will be recreated at next view start
+		mMap = null;
 
-    @Override
-    public void onMapNotAvailable()
-    {
-        // Show an error to the user
-    }
+		super.onStop();
+	}
 
-    @NonNull
-    @Override
-    public LocationRequest getLocationRequest()
-    {
-        return LocationRequest.create()
-            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-            .setInterval(5000)
-            .setFastestInterval(1000);
-    }
+	@Override
+	public void onMapAvailable(@NonNull GoogleMap map)
+	{
+		// You can store the map to perform actions on it later, like adding pins
+		// IMPORTANT: Don't forget to clear it when onStop is called !
+		mMap = map;
+	}
 
-    @Override
-    public void onUserLocationChanged(@NonNull Location location)
-    {
-        // The map will be automaticaly updated with the user position
-        // but you can use that method to do whatever you want with the user
-        // position.
-    }
+	@Override
+	public void onMapNotAvailable()
+	{
+		// Show an error to the user
+	}
+
+	@NonNull
+	@Override
+	public LocationRequest getLocationRequest()
+	{
+		return LocationRequest.create()
+			.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+			.setInterval(5000)
+			.setFastestInterval(1000);
+	}
+
+	@Override
+	public void onUserLocationChanged(@NonNull Location location)
+	{
+		// The map will be automaticaly updated with the user position
+		// but you can use that method to do whatever you want with the user
+		// position.
+	}
 }
 ```
 
