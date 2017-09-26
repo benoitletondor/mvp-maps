@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
 
 import com.benoitletondor.mvp.core.view.impl.BaseMVPFragment;
 import com.benoitletondor.mvp.maps.presenter.MapPresenter;
@@ -64,6 +65,8 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
     @Override
     public void loadMap()
     {
+        final View view = getActivity().findViewById(mMapContainerId);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(mMapContainerId);
         if( mapFragment == null )
         {
@@ -78,11 +81,33 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
             mapFragment.getMapAsync(new OnMapReadyCallback()
             {
                 @Override
-                public void onMapReady(GoogleMap googleMap)
+                public void onMapReady(final GoogleMap googleMap)
                 {
-                    if( mPresenter != null )
+                    // If layout hasn't happen yet, just wait for it and then trigger onMapReady
+                    // FIXME this is very leak prone, find a better way?
+                    if( view.getWidth() == 0 && view.getHeight() == 0 )
                     {
-                        mPresenter.onMapReady(googleMap);
+                        view.addOnLayoutChangeListener(new View.OnLayoutChangeListener()
+                        {
+                            @Override
+                            public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7)
+                            {
+                                view.removeOnLayoutChangeListener(this);
+
+                                if( mPresenter != null )
+                                {
+                                    mPresenter.onMapReady(googleMap);
+                                }
+                            }
+                        });
+                    }
+                    // If layout has been made, call onMapReady directly
+                    else
+                    {
+                        if( mPresenter != null )
+                        {
+                            mPresenter.onMapReady(googleMap);
+                        }
                     }
                 }
             });
