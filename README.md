@@ -21,7 +21,7 @@ This library provides implementation for views that use the [appcompat-v7 suppor
 **Add this line to your gradle file:**
 
 ```
-compile 'com.benoitletondor:mvp-maps:0.1'
+compile 'com.benoitletondor:mvp-maps:0.2'
 ```
 
 To use it, every `Presenter` of your app should extends `BaseMapPresenterImpl` and every view should extend either `BaseMVPMapActivity` or `BaseMVPMapFragment`.
