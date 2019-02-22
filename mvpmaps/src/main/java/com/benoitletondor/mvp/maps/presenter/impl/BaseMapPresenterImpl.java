@@ -13,7 +13,6 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.LocationSource;
 
 /**
@@ -196,7 +195,7 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap)
+    public void onMapReady()
     {
         if (mState == State.MAP_READY)
         {
@@ -205,26 +204,24 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
 
         mState = State.MAP_READY;
 
-        populateMap(googleMap);
+        populateMap();
     }
 
     /**
-     * Populate the map with the location source if needed and call the {@link #onMapAvailable(GoogleMap)}
-     * callback.
-     *
-     * @param googleMap the ready map
+     * Populate the map with the location source if needed and calls {@link #onMapAvailable()}
      */
-    private void populateMap(@NonNull GoogleMap googleMap)
+    private void populateMap()
     {
         mState = State.MAP_AVAILABLE;
 
         if (mNeedGeoloc && !mGeolocPermissionDenied && mLocationProviderClient != null)
         {
-            googleMap.setLocationSource(this);
-            googleMap.setMyLocationEnabled(true);
+            if (mView != null) {
+                mView.setLocation(this);
+            }
         }
 
-        onMapAvailable(googleMap);
+        onMapAvailable();
     }
 
     @Override

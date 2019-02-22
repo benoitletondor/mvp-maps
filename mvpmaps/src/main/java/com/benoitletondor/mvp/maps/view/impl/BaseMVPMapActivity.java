@@ -20,6 +20,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
@@ -29,7 +30,7 @@ import com.google.android.gms.maps.SupportMapFragment;
  *
  * @author Benoit LETONDOR
  */
-public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends MapView> extends BaseMVPActivity<P, V> implements MapView
+public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends MapView> extends BaseMVPActivity<P, V> implements MapView, LocationSource
 {
     private final static String TAG = "BaseMVPMapActivity";
 
@@ -45,6 +46,8 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
      */
     @IdRes
     private int mMapContainerId = -1;
+
+    protected GoogleMap map;
 
 // ------------------------------------------>
 
@@ -95,6 +98,8 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
                 @Override
                 public void onMapReady(final GoogleMap googleMap)
                 {
+                    map = googleMap;
+
                     // If layout hasn't happen yet, just wait for it and then trigger onMapReady
                     // FIXME this is very leak prone, find a better way?
                     if( view.getWidth() == 0 && view.getHeight() == 0 )
@@ -108,7 +113,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
 
                                 if( mPresenter != null )
                                 {
-                                    mPresenter.onMapReady(googleMap);
+                                    mPresenter.onMapReady();
                                 }
                             }
                         });
@@ -118,7 +123,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
                     {
                         if( mPresenter != null )
                         {
-                            mPresenter.onMapReady(googleMap);
+                            mPresenter.onMapReady();
                         }
                     }
                 }
@@ -132,6 +137,22 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
                 mPresenter.onMapNotAvailable();
             }
         }
+    }
+
+    @Override
+    public void activate(OnLocationChangedListener onLocationChangedListener) {
+
+    }
+
+    @Override
+    public void deactivate() {
+
+    }
+
+    @Override
+    public void setLocationSource() {
+        map.setLocationSource(this);
+        map.setMyLocationEnabled(true);
     }
 
     @Override
