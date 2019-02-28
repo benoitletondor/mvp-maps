@@ -124,6 +124,11 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
         return map;
     }
 
+    /**
+     * Accesses the fused location provider client associated with this view
+     *
+     * @return a fused location provider, ready to be used by the presenter
+     */
     @NonNull
     private FusedLocationProviderClient getFusedLocationProviderClient()
     {
