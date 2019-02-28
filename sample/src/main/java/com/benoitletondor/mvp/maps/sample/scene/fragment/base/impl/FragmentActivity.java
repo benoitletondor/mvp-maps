@@ -50,7 +50,7 @@ public final class FragmentActivity extends BaseMVPActivity<FragmentPresenter, F
     {
         int id = item.getItemId();
 
-        switch (id)
+        switch ( id )
         {
             case android.R.id.home:
                 finish();

@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 import com.benoitletondor.mvp.core.presenter.Presenter;
 import com.benoitletondor.mvp.maps.view.MapView;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 
 /**
  * Interface for the map presenter that defines methods. You shouldn't directly implement but extend
@@ -15,14 +13,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
  *
  * @author Benoit LETONDOR
  */
-public interface MapPresenter<V extends MapView> extends Presenter<V>, OnMapReadyCallback
+public interface MapPresenter<V extends MapView> extends Presenter<V>
 {
     /**
-     * Called when the map is set-up and ready to be filled with data
-     *
-     * @param map the ready to be used map
+     * Called when the map is ready to be used
      */
-    void onMapAvailable(@NonNull GoogleMap map);
+    void onMapReady();
 
     /**
      * Called when the map is not available due to an error
@@ -38,8 +34,18 @@ public interface MapPresenter<V extends MapView> extends Presenter<V>, OnMapRead
     LocationRequest getLocationRequest();
 
     /**
-     * Called when the user location change. The location is automatically updated on the map but
-     * you can use this callback to do something else with the user location.
+     * Called on a new location result from the location provider. There is no need to
+     * override this method since {@link com.benoitletondor.mvp.maps.presenter.impl.BaseMapPresenterImpl} already does
+     * to update the user location.
+     *
+     * @param location the new result location
+     */
+    void onLocationResult(@NonNull Location location);
+
+    /**
+     * Called when the user location change. The location is automatically updated on the map by
+     * {@link #onLocationResult(Location)} but you can use this callback to do something else with the
+     * user location.
      *
      * @param location the new user location
      */
@@ -58,4 +64,16 @@ public interface MapPresenter<V extends MapView> extends Presenter<V>, OnMapRead
      * override this method since {@link com.benoitletondor.mvp.maps.presenter.impl.BaseMapPresenterImpl} already does.
      */
     void onLocationPermissionDenied();
+
+    /**
+     * Method used by the {@link MapView} to notify the location source was activated. There is no need to
+     * override this method since {@link com.benoitletondor.mvp.maps.presenter.impl.BaseMapPresenterImpl} already does.
+     */
+    void onLocationSourceActivated();
+
+    /**
+     * Method used by the {@link MapView} to notify the location source was deactivated. There is no need to
+     * override this method since {@link com.benoitletondor.mvp.maps.presenter.impl.BaseMapPresenterImpl} already does.
+     */
+    void onLocationSourceDeactivated();
 }
