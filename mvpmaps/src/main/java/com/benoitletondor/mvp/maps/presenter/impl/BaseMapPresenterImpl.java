@@ -15,7 +15,8 @@ import com.google.android.gms.location.FusedLocationProviderClient;
  *
  * @author Benoit LETONDOR
  */
-public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresenterImpl<V> implements MapPresenter<V> {
+public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresenterImpl<V> implements MapPresenter<V>
+{
     private final static String TAG = "BaseMapPresenterImpl";
 
     /**
@@ -40,17 +41,20 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
      *
      * @param needGeolocation does the map needs user location
      */
-    protected BaseMapPresenterImpl(boolean needGeolocation) {
+    protected BaseMapPresenterImpl(boolean needGeolocation)
+    {
         mNeedGeoloc = needGeolocation;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onStart(boolean viewCreated) {
+    public void onStart(boolean viewCreated)
+    {
         super.onStart(viewCreated);
         assert mView != null;
 
-        switch (mState) {
+        switch ( mState )
+        {
             case CREATED:
                 askForLocationIfNeededOrDisplayMap();
                 break;
@@ -73,13 +77,18 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
      * Called when GPS are ready or when there are not needed (since no location needed). This
      * method takes care of requesting the permission if needed or loading the map.
      */
-    private void askForLocationIfNeededOrDisplayMap() {
-        if (mNeedGeoloc) {
+    private void askForLocationIfNeededOrDisplayMap()
+    {
+        if ( mNeedGeoloc )
+        {
             mState = State.WAITING_FOR_LOCATION_PERMISSION;
-            if (mView != null) {
+            if ( mView != null )
+            {
                 mView.requestLocationPermission();
             }
-        } else {
+        }
+        else
+        {
             mState = State.WAITING_FOR_MAP;
             loadMapAndLocationProvider();
         }
@@ -91,9 +100,12 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
      * Load the map and optionally retrieve the {@link FusedLocationProviderClient} from the view if
      * {@link #mNeedGeoloc} is true
      */
-    private void loadMapAndLocationProvider() {
-        if (mView != null) {
-            if (mNeedGeoloc && !mGeolocPermissionDenied) {
+    private void loadMapAndLocationProvider()
+    {
+        if ( mView != null )
+        {
+            if ( mNeedGeoloc && !mGeolocPermissionDenied )
+            {
                 mView.loadLocationProvider();
             }
 
@@ -102,7 +114,8 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     }
 
     @Override
-    public void onLocationPermissionGranted() {
+    public void onLocationPermissionGranted()
+    {
         mState = State.LOCATION_PERMISSION_GRANTED;
 
         mGeolocPermissionDenied = false;
@@ -110,7 +123,8 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     }
 
     @Override
-    public void onLocationPermissionDenied() {
+    public void onLocationPermissionDenied()
+    {
         mState = State.LOCATION_PERMISSION_DENIED;
 
         mGeolocPermissionDenied = true;
@@ -118,8 +132,10 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     }
 
     @Override
-    public void onLocationResult(@NonNull Location location) {
-        if( mView != null ) {
+    public void onLocationResult(@NonNull Location location)
+    {
+        if ( mView != null )
+        {
             mView.updateUserLocation(location);
         }
 
@@ -127,8 +143,10 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     }
 
     @Override
-    public void onMapReady() {
-        if (mState == State.MAP_READY) {
+    public void onMapReady()
+    {
+        if ( mState == State.MAP_READY )
+        {
             return;
         }
 
@@ -140,30 +158,38 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     /**
      * Populate the map with the location source if needed
      */
-    private void populateMap() {
+    private void populateMap()
+    {
         mState = State.MAP_AVAILABLE;
 
-        if (mNeedGeoloc && !mGeolocPermissionDenied) {
-            if (mView != null) {
+        if ( mNeedGeoloc && !mGeolocPermissionDenied )
+        {
+            if ( mView != null )
+            {
                 mView.enableUserLocation();
             }
         }
 
-        if (mView != null) {
+        if ( mView != null )
+        {
             mView.onMapAvailable();
         }
     }
 
     @Override
-    public void onLocationSourceActivated() {
-        if (mView != null) {
+    public void onLocationSourceActivated()
+    {
+        if ( mView != null )
+        {
             mView.requestLocationUpdates(getLocationRequest());
         }
     }
 
     @Override
-    public void onLocationSourceDeactivated() {
-        if (mView != null) {
+    public void onLocationSourceDeactivated()
+    {
+        if ( mView != null )
+        {
             mView.removeLocationUpdates();
         }
     }
@@ -171,7 +197,8 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     /**
      * States of this presenter
      */
-    private enum State {
+    private enum State
+    {
         /**
          * Presenter has just been created and not yet started
          */

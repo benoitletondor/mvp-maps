@@ -36,12 +36,12 @@ public final class FragmentActivity extends BaseMVPActivity<FragmentPresenter, F
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // This is done directly into the activity cause it's not related to any app logic and thus shouldn't be put in presenter
-        if( getSupportFragmentManager().findFragmentById(R.id.activity_fragment_container) == null )
+        if ( getSupportFragmentManager().findFragmentById(R.id.activity_fragment_container) == null )
         {
             getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.activity_fragment_container, new SampleFragment())
-                .commit();
+                    .beginTransaction()
+                    .replace(R.id.activity_fragment_container, new SampleFragment())
+                    .commit();
         }
     }
 
@@ -50,7 +50,7 @@ public final class FragmentActivity extends BaseMVPActivity<FragmentPresenter, F
     {
         int id = item.getItemId();
 
-        switch (id)
+        switch ( id )
         {
             case android.R.id.home:
                 finish();

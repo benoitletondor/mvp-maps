@@ -58,25 +58,27 @@ public final class SampleFragment extends BaseMVPMapFragment<SampleFragmentPrese
     public void showMapNotAvailableAlert()
     {
         new AlertDialog.Builder(getContext())
-            .setTitle(R.string.maps_not_available_alert_title)
-            .setMessage(R.string.maps_not_available_alert_message)
-            .setPositiveButton(android.R.string.ok, null)
-            .show();
+                .setTitle(R.string.maps_not_available_alert_title)
+                .setMessage(R.string.maps_not_available_alert_message)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
     }
 
     @Override
-    public void onMapAvailable() {
-        if( mPresenter != null )
+    public void onMapAvailable()
+    {
+        if ( mPresenter != null )
         {
             mPresenter.onMapAvailable();
         }
     }
 
     @Override
-    public void animateMapCamera(CameraUpdate cameraUpdate) {
+    public void animateMapCamera(CameraUpdate cameraUpdate)
+    {
         final GoogleMap map = getMap();
 
-        if( map != null )
+        if ( map != null )
         {
             getMap().animateCamera(cameraUpdate);
         }

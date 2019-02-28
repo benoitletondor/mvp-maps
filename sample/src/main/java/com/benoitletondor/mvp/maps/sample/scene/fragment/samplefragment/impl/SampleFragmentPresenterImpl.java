@@ -31,14 +31,15 @@ public final class SampleFragmentPresenterImpl extends BaseMapPresenterImpl<Samp
     }
 
     @Override
-    public void onMapAvailable() {
+    public void onMapAvailable()
+    {
         //Whatever you want to do once the map is available
     }
 
     @Override
     public void onMapNotAvailable()
     {
-        if( mView != null )
+        if ( mView != null )
         {
             mView.showMapNotAvailableAlert();
         }
@@ -60,7 +61,7 @@ public final class SampleFragmentPresenterImpl extends BaseMapPresenterImpl<Samp
         final SampleFragmentView view = mView;
 
         // This code simply zoom the map camera to the user position the first time we have it
-        if( !mMapZoomedOnUserPosition && view != null )
+        if ( !mMapZoomedOnUserPosition && view != null )
         {
             mMapZoomedOnUserPosition = true;
 

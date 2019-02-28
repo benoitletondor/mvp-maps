@@ -77,7 +77,8 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
      * Listener for location update
      */
     @NonNull
-    private final LocationCallback mLocationCallback = new LocationCallback() {
+    private final LocationCallback mLocationCallback = new LocationCallback()
+    {
         @Override
         public void onLocationResult(LocationResult locationResult)
         {
@@ -85,7 +86,8 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
 
             final Location location = locationResult.getLastLocation();
 
-            if( mPresenter != null ) {
+            if ( mPresenter != null )
+            {
                 mPresenter.onLocationResult(location);
             }
         }
@@ -120,7 +122,8 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
      * @return Displayed GoogleMap instance, or null if the map was not initialized or is not available
      */
     @Nullable
-    protected GoogleMap getMap() {
+    protected GoogleMap getMap()
+    {
         return map;
     }
 
@@ -136,21 +139,22 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     }
 
     @Override
-    public void loadLocationProvider() {
+    public void loadLocationProvider()
+    {
         mLocationProviderClient = getFusedLocationProviderClient();
     }
 
     @Override
     public void loadMap()
     {
-        if( mMapContainerId == -1 )
+        if ( mMapContainerId == -1 )
         {
             throw new IllegalStateException("You must call super.onCreate(savedInstanceState, mapContainerId) to pass the container id for the map");
         }
 
         final View view = findViewById(mMapContainerId);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(mMapContainerId);
-        if( mapFragment == null )
+        if ( mapFragment == null )
         {
             mapFragment = SupportMapFragment.newInstance();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -158,7 +162,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
             fragmentTransaction.commitAllowingStateLoss();
         }
 
-        if( GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext()) == ConnectionResult.SUCCESS )
+        if ( GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext()) == ConnectionResult.SUCCESS )
         {
             mapFragment.getMapAsync(new OnMapReadyCallback()
             {
@@ -169,7 +173,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
 
                     // If layout hasn't happen yet, just wait for it and then trigger onMapReady
                     // FIXME this is very leak prone, find a better way?
-                    if( view.getWidth() == 0 && view.getHeight() == 0 )
+                    if ( view.getWidth() == 0 && view.getHeight() == 0 )
                     {
                         view.addOnLayoutChangeListener(new View.OnLayoutChangeListener()
                         {
@@ -178,7 +182,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
                             {
                                 view.removeOnLayoutChangeListener(this);
 
-                                if( mPresenter != null )
+                                if ( mPresenter != null )
                                 {
                                     mPresenter.onMapReady();
                                 }
@@ -188,7 +192,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
                     // If layout has been made, call onMapReady directly
                     else
                     {
-                        if( mPresenter != null )
+                        if ( mPresenter != null )
                         {
                             mPresenter.onMapReady();
                         }
@@ -199,7 +203,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
         else
         {
             Log.e(TAG, "Play Services not available");
-            if( mPresenter != null )
+            if ( mPresenter != null )
             {
                 mPresenter.onMapNotAvailable();
             }
@@ -207,8 +211,10 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     }
 
     @Override
-    public void activate(OnLocationChangedListener onLocationChangedListener) {
-        if( mPresenter != null ) {
+    public void activate(OnLocationChangedListener onLocationChangedListener)
+    {
+        if ( mPresenter != null )
+        {
             mPresenter.onLocationSourceActivated();
         }
 
@@ -216,8 +222,10 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     }
 
     @Override
-    public void deactivate() {
-        if( mPresenter != null ) {
+    public void deactivate()
+    {
+        if ( mPresenter != null )
+        {
             mPresenter.onLocationSourceDeactivated();
         }
 
@@ -225,30 +233,37 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     }
 
     @Override
-    public void requestLocationUpdates(LocationRequest locationRequest) {
-        if( mLocationProviderClient != null ) {
+    public void requestLocationUpdates(LocationRequest locationRequest)
+    {
+        if ( mLocationProviderClient != null )
+        {
             mLocationProviderClient.requestLocationUpdates(locationRequest, mLocationCallback, null);
         }
     }
 
     @Override
-    public void removeLocationUpdates() {
-        if( mLocationProviderClient != null ) {
+    public void removeLocationUpdates()
+    {
+        if ( mLocationProviderClient != null )
+        {
             mLocationProviderClient.removeLocationUpdates(mLocationCallback);
         }
     }
 
     @Override
-    public void enableUserLocation() {
-        if( map != null ) {
+    public void enableUserLocation()
+    {
+        if ( map != null )
+        {
             map.setLocationSource(this);
             map.setMyLocationEnabled(true);
         }
     }
 
     @Override
-    public void updateUserLocation(Location location) {
-        if( mLocationChangeListener != null )
+    public void updateUserLocation(Location location)
+    {
+        if ( mLocationChangeListener != null )
         {
             mLocationChangeListener.onLocationChanged(location);
         }
@@ -257,9 +272,9 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     @Override
     public void requestLocationPermission()
     {
-        if( ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED )
+        if ( ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED )
         {
-            if( mPresenter != null )
+            if ( mPresenter != null )
             {
                 mPresenter.onLocationPermissionGranted();
             }
@@ -275,11 +290,11 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if( requestCode == REQUEST_CODE_LOCATION_PERMISSION && grantResults.length > 0 )
+        if ( requestCode == REQUEST_CODE_LOCATION_PERMISSION && grantResults.length > 0 )
         {
-            if( mPresenter != null )
+            if ( mPresenter != null )
             {
-                if( grantResults[0] == PackageManager.PERMISSION_GRANTED )
+                if ( grantResults[0] == PackageManager.PERMISSION_GRANTED )
                 {
                     mPresenter.onLocationPermissionGranted();
                 }
@@ -300,9 +315,9 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     {
         super.onResume();
 
-        if( mTempLocationResult != DEFAULT_TEMP_LOCATION_RESULT && mPresenter != null )
+        if ( mTempLocationResult != DEFAULT_TEMP_LOCATION_RESULT && mPresenter != null )
         {
-            if( mTempLocationResult == PackageManager.PERMISSION_GRANTED )
+            if ( mTempLocationResult == PackageManager.PERMISSION_GRANTED )
             {
                 mPresenter.onLocationPermissionGranted();
             }
@@ -322,13 +337,13 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
         // Stop asking for user location when view moves in background
         try
         {
-            if( mLocationProviderClient != null )
+            if ( mLocationProviderClient != null )
             {
                 Log.d(TAG, "onStop removeLocationUpdates");
                 mLocationProviderClient.removeLocationUpdates(mLocationCallback);
             }
         }
-        catch (Exception e)
+        catch ( Exception e )
         {
             Log.e(TAG, "Error while removing location updates onStop", e);
         }
