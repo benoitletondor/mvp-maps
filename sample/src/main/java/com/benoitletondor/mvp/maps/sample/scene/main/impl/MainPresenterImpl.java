@@ -33,7 +33,7 @@ public class MainPresenterImpl extends BaseMapPresenterImpl<MainView> implements
     @Override
     public void onStartFragmentActivityButtonClicked()
     {
-        if ( mView != null )
+        if( mView != null )
         {
             mView.startFragmentActivity();
         }
@@ -48,7 +48,7 @@ public class MainPresenterImpl extends BaseMapPresenterImpl<MainView> implements
     @Override
     public void onMapNotAvailable()
     {
-        if ( mView != null )
+        if( mView != null )
         {
             mView.showMapNotAvailableAlert();
         }
@@ -59,9 +59,9 @@ public class MainPresenterImpl extends BaseMapPresenterImpl<MainView> implements
     public LocationRequest getLocationRequest()
     {
         return LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(5000)
-                .setFastestInterval(1000);
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+            .setInterval(5000)
+            .setFastestInterval(1000);
     }
 
     @Override
@@ -70,12 +70,12 @@ public class MainPresenterImpl extends BaseMapPresenterImpl<MainView> implements
         final MainView view = mView;
 
         // This code simply zoom the map camera to the user position the first time we have it
-        if ( !mMapZoomedOnUserPosition && view != null )
+        if( !mMapZoomedOnUserPosition && view != null )
         {
             mMapZoomedOnUserPosition = true;
 
             final CameraUpdate update = CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(location.getLatitude(), location.getLongitude()), 11f);
+                new LatLng(location.getLatitude(), location.getLongitude()), 11f);
 
             view.animateMapCamera(update);
         }

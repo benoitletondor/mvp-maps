@@ -19,7 +19,7 @@ public final class App extends DaggerApplication
     {
         super.onCreate();
 
-        if (LeakCanary.isInAnalyzerProcess(this))
+        if( LeakCanary.isInAnalyzerProcess(this) )
         {
             return;
         }

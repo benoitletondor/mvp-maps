@@ -79,10 +79,10 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
      */
     private void askForLocationIfNeededOrDisplayMap()
     {
-        if ( mNeedGeoloc )
+        if( mNeedGeoloc )
         {
             mState = State.WAITING_FOR_LOCATION_PERMISSION;
-            if ( mView != null )
+            if( mView != null )
             {
                 mView.requestLocationPermission();
             }
@@ -102,9 +102,9 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
      */
     private void loadMapAndLocationProvider()
     {
-        if ( mView != null )
+        if( mView != null )
         {
-            if ( mNeedGeoloc && !mGeolocPermissionDenied )
+            if( mNeedGeoloc && !mGeolocPermissionDenied )
             {
                 mView.loadLocationProvider();
             }
@@ -134,7 +134,7 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     @Override
     public void onLocationResult(@NonNull Location location)
     {
-        if ( mView != null )
+        if( mView != null )
         {
             mView.updateUserLocation(location);
         }
@@ -145,7 +145,7 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     @Override
     public void onMapReady()
     {
-        if ( mState == State.MAP_READY )
+        if( mState == State.MAP_READY )
         {
             return;
         }
@@ -162,15 +162,15 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     {
         mState = State.MAP_AVAILABLE;
 
-        if ( mNeedGeoloc && !mGeolocPermissionDenied )
+        if( mNeedGeoloc && !mGeolocPermissionDenied )
         {
-            if ( mView != null )
+            if( mView != null )
             {
                 mView.enableUserLocation();
             }
         }
 
-        if ( mView != null )
+        if( mView != null )
         {
             mView.onMapAvailable();
         }
@@ -179,7 +179,7 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     @Override
     public void onLocationSourceActivated()
     {
-        if ( mView != null )
+        if( mView != null )
         {
             mView.requestLocationUpdates(getLocationRequest());
         }
@@ -188,7 +188,7 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     @Override
     public void onLocationSourceDeactivated()
     {
-        if ( mView != null )
+        if( mView != null )
         {
             mView.removeLocationUpdates();
         }

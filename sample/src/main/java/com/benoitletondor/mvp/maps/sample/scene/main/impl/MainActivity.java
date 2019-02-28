@@ -43,7 +43,7 @@ public final class MainActivity extends BaseMVPMapActivity<MainPresenter, MainVi
             @Override
             public void onClick(View view)
             {
-                if ( mPresenter != null )
+                if( mPresenter != null )
                 {
                     mPresenter.onStartFragmentActivityButtonClicked();
                 }
@@ -62,7 +62,7 @@ public final class MainActivity extends BaseMVPMapActivity<MainPresenter, MainVi
     @Override
     public void onMapAvailable()
     {
-        if ( mPresenter != null )
+        if( mPresenter != null )
         {
             mPresenter.onMapAvailable();
         }
@@ -79,10 +79,10 @@ public final class MainActivity extends BaseMVPMapActivity<MainPresenter, MainVi
     public void showMapNotAvailableAlert()
     {
         new AlertDialog.Builder(this)
-                .setTitle(R.string.maps_not_available_alert_title)
-                .setMessage(R.string.maps_not_available_alert_message)
-                .setPositiveButton(android.R.string.ok, null)
-                .show();
+            .setTitle(R.string.maps_not_available_alert_title)
+            .setMessage(R.string.maps_not_available_alert_message)
+            .setPositiveButton(android.R.string.ok, null)
+            .show();
     }
 
     @Override
@@ -90,7 +90,7 @@ public final class MainActivity extends BaseMVPMapActivity<MainPresenter, MainVi
     {
         final GoogleMap map = getMap();
 
-        if ( map != null )
+        if( map != null )
         {
             getMap().animateCamera(cameraUpdate);
         }
