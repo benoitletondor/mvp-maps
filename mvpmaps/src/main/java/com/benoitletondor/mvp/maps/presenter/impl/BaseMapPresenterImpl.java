@@ -1,20 +1,13 @@
 package com.benoitletondor.mvp.maps.presenter.impl;
 
-import android.annotation.SuppressLint;
 import android.location.Location;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.benoitletondor.mvp.core.presenter.impl.BasePresenterImpl;
 import com.benoitletondor.mvp.maps.presenter.MapPresenter;
 import com.benoitletondor.mvp.maps.view.MapView;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationAvailability;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.LocationSource;
 
 /**
  * Implementation of the {@link MapPresenter} that you should extends to provide a map view. If
@@ -22,9 +15,7 @@ import com.google.android.gms.maps.LocationSource;
  *
  * @author Benoit LETONDOR
  */
-@SuppressLint("MissingPermission")
-public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresenterImpl<V> implements MapPresenter<V>, LocationSource
-{
+public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresenterImpl<V> implements MapPresenter<V> {
     private final static String TAG = "BaseMapPresenterImpl";
 
     /**
@@ -35,48 +26,12 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
      * Has the geolocation permission been denied by the user
      */
     private boolean mGeolocPermissionDenied = false;
-    /**
-     * Listener for location update
-     */
-    @NonNull
-    private final LocationCallback mLocationCallback = new LocationCallback() {
-        @Override
-        public void onLocationResult(LocationResult locationResult)
-        {
-            super.onLocationResult(locationResult);
 
-            final Location location = locationResult.getLastLocation();
-
-            if( mLocationChangeListener != null )
-            {
-                mLocationChangeListener.onLocationChanged(location);
-            }
-
-            onUserLocationChanged(location);
-        }
-
-        @Override
-        public void onLocationAvailability(LocationAvailability locationAvailability)
-        {
-            super.onLocationAvailability(locationAvailability);
-        }
-    };
-
-    /**
-     * Play services client
-     */
-    @Nullable
-    private FusedLocationProviderClient mLocationProviderClient;
     /**
      * Current presenter state
      */
     @NonNull
     private State mState = State.CREATED;
-    /**
-     * Location listener gave by the map to send user location update
-     */
-    @Nullable
-    private OnLocationChangedListener mLocationChangeListener;
 
 // ------------------------------------------->
 
@@ -85,20 +40,17 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
      *
      * @param needGeolocation does the map needs user location
      */
-    protected BaseMapPresenterImpl(boolean needGeolocation)
-    {
+    protected BaseMapPresenterImpl(boolean needGeolocation) {
         mNeedGeoloc = needGeolocation;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onStart(boolean viewCreated)
-    {
+    public void onStart(boolean viewCreated) {
         super.onStart(viewCreated);
         assert mView != null;
 
-        switch (mState)
-        {
+        switch (mState) {
             case CREATED:
                 askForLocationIfNeededOrDisplayMap();
                 break;
@@ -117,49 +69,22 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
         }
     }
 
-    @Override
-    public void onStop()
-    {
-        // Stop asking for user location when view moves in background
-        try
-        {
-            if( mLocationProviderClient != null )
-            {
-                Log.d(TAG, "onStop removeLocationUpdates");
-                mLocationProviderClient.removeLocationUpdates(mLocationCallback);
-            }
-        }
-        catch (Exception e)
-        {
-            Log.e(TAG, "Error while removing location updates onStop", e);
-        }
-
-        mLocationProviderClient = null;
-
-        super.onStop();
-    }
-
     /**
      * Called when GPS are ready or when there are not needed (since no location needed). This
      * method takes care of requesting the permission if needed or loading the map.
      */
-    private void askForLocationIfNeededOrDisplayMap()
-    {
-        if (mNeedGeoloc)
-        {
+    private void askForLocationIfNeededOrDisplayMap() {
+        if (mNeedGeoloc) {
             mState = State.WAITING_FOR_LOCATION_PERMISSION;
-            if( mView != null )
-            {
+            if (mView != null) {
                 mView.requestLocationPermission();
             }
-        }
-        else
-        {
+        } else {
             mState = State.WAITING_FOR_MAP;
             loadMapAndLocationProvider();
         }
 
-        Log.d(TAG, "askForLocationIfNeededOrDisplayMap: "+ mState);
+        Log.d(TAG, "askForLocationIfNeededOrDisplayMap: " + mState);
     }
 
     /**
@@ -167,10 +92,9 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
      * {@link #mNeedGeoloc} is true
      */
     private void loadMapAndLocationProvider() {
-        if( mView != null )
-        {
-            if( mNeedGeoloc && !mGeolocPermissionDenied ) {
-                mLocationProviderClient = mView.getFusedLocationProviderClient();
+        if (mView != null) {
+            if (mNeedGeoloc && !mGeolocPermissionDenied) {
+                mView.loadLocationProvider();
             }
 
             mView.loadMap();
@@ -178,8 +102,7 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     }
 
     @Override
-    public void onLocationPermissionGranted()
-    {
+    public void onLocationPermissionGranted() {
         mState = State.LOCATION_PERMISSION_GRANTED;
 
         mGeolocPermissionDenied = false;
@@ -187,8 +110,7 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     }
 
     @Override
-    public void onLocationPermissionDenied()
-    {
+    public void onLocationPermissionDenied() {
         mState = State.LOCATION_PERMISSION_DENIED;
 
         mGeolocPermissionDenied = true;
@@ -196,76 +118,60 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap)
-    {
-        if (mState == State.MAP_READY)
-        {
+    public void onLocationResult(@NonNull Location location) {
+        if( mView != null ) {
+            mView.updateUserLocation(location);
+        }
+
+        onUserLocationChanged(location);
+    }
+
+    @Override
+    public void onMapReady() {
+        if (mState == State.MAP_READY) {
             return;
         }
 
         mState = State.MAP_READY;
 
-        populateMap(googleMap);
+        populateMap();
     }
 
     /**
-     * Populate the map with the location source if needed and call the {@link #onMapAvailable(GoogleMap)}
-     * callback.
-     *
-     * @param googleMap the ready map
+     * Populate the map with the location source if needed
      */
-    private void populateMap(@NonNull GoogleMap googleMap)
-    {
+    private void populateMap() {
         mState = State.MAP_AVAILABLE;
 
-        if (mNeedGeoloc && !mGeolocPermissionDenied && mLocationProviderClient != null)
-        {
-            googleMap.setLocationSource(this);
-            googleMap.setMyLocationEnabled(true);
-        }
-
-        onMapAvailable(googleMap);
-    }
-
-    @Override
-    public void activate(OnLocationChangedListener onLocationChangedListener)
-    {
-        mLocationChangeListener = onLocationChangedListener;
-
-        try
-        {
-            if( mLocationProviderClient != null ) {
-                mLocationProviderClient.requestLocationUpdates(getLocationRequest(), mLocationCallback, null);
+        if (mNeedGeoloc && !mGeolocPermissionDenied) {
+            if (mView != null) {
+                mView.enableUserLocation();
             }
         }
-        catch (Exception e)
-        {
-            Log.e(TAG, "Exception while activating location updates", e);
+
+        if (mView != null) {
+            mView.onMapAvailable();
         }
     }
 
     @Override
-    public void deactivate()
-    {
-        try
-        {
-            if( mLocationProviderClient != null ) {
-                mLocationProviderClient.removeLocationUpdates(mLocationCallback);
-            }
+    public void onLocationSourceActivated() {
+        if (mView != null) {
+            mView.requestLocationUpdates(getLocationRequest());
         }
-        catch (Exception e)
-        {
-            Log.e(TAG, "Error while removing location updates on map deactivate", e);
-        }
+    }
 
-        mLocationChangeListener = null;
+    @Override
+    public void onLocationSourceDeactivated() {
+        if (mView != null) {
+            mView.removeLocationUpdates();
+        }
     }
 
     /**
      * States of this presenter
      */
-    private enum State
-    {
+    private enum State {
         /**
          * Presenter has just been created and not yet started
          */
