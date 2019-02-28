@@ -13,4 +13,6 @@ public interface MainPresenter extends MapPresenter<MainView>
      * Called when the user clicks on the start fragment activity button
      */
     void onStartFragmentActivityButtonClicked();
+
+    void onMapAvailable();
 }

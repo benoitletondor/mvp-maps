@@ -12,6 +12,8 @@ import com.benoitletondor.mvp.maps.sample.R;
 import com.benoitletondor.mvp.maps.sample.scene.fragment.samplefragment.SampleFragmentPresenter;
 import com.benoitletondor.mvp.maps.sample.scene.fragment.samplefragment.SampleFragmentView;
 import com.benoitletondor.mvp.maps.view.impl.BaseMVPMapFragment;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.GoogleMap;
 
 import javax.inject.Inject;
 
@@ -60,5 +62,23 @@ public final class SampleFragment extends BaseMVPMapFragment<SampleFragmentPrese
             .setMessage(R.string.maps_not_available_alert_message)
             .setPositiveButton(android.R.string.ok, null)
             .show();
+    }
+
+    @Override
+    public void onMapAvailable() {
+        if( mPresenter != null )
+        {
+            mPresenter.onMapAvailable();
+        }
+    }
+
+    @Override
+    public void animateMapCamera(CameraUpdate cameraUpdate) {
+        final GoogleMap map = getMap();
+
+        if( map != null )
+        {
+            getMap().animateCamera(cameraUpdate);
+        }
     }
 }

@@ -9,5 +9,5 @@ import com.benoitletondor.mvp.maps.presenter.MapPresenter;
  */
 public interface SampleFragmentPresenter extends MapPresenter<SampleFragmentView>
 {
-
+    void onMapAvailable();
 }
