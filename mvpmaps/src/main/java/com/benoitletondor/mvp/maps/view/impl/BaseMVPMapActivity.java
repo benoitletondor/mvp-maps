@@ -330,7 +330,6 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
         }
     }
 
-
     @Override
     public void onStop()
     {
