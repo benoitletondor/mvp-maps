@@ -15,15 +15,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
  *
  * @author Benoit LETONDOR
  */
-public interface MapPresenter<V extends MapView> extends Presenter<V>
+public interface MapPresenter<V extends MapView> extends Presenter<V>, OnMapReadyCallback
 {
-
-    void onMapReady();
-
     /**
      * Called when the map is set-up and ready to be filled with data
+     *
+     * @param map the ready to be used map
      */
-    void onMapAvailable();
+    void onMapAvailable(@NonNull GoogleMap map);
 
     /**
      * Called when the map is not available due to an error

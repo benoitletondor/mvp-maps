@@ -17,7 +17,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
@@ -43,8 +42,6 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
      */
     @IdRes
     private final int mMapContainerId;
-
-    protected GoogleMap map;
 
 // ------------------------------------------>
 
@@ -86,7 +83,6 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
                 @Override
                 public void onMapReady(final GoogleMap googleMap)
                 {
-                    map = googleMap;
                     // If layout hasn't happen yet, just wait for it and then trigger onMapReady
                     // FIXME this is very leak prone, find a better way?
                     if( view.getWidth() == 0 && view.getHeight() == 0 )
@@ -100,7 +96,7 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
 
                                 if( mPresenter != null )
                                 {
-                                    mPresenter.onMapReady();
+                                    mPresenter.onMapReady(googleMap);
                                 }
                             }
                         });
@@ -110,7 +106,7 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
                     {
                         if( mPresenter != null )
                         {
-                            mPresenter.onMapReady();
+                            mPresenter.onMapReady(googleMap);
                         }
                     }
                 }
@@ -124,12 +120,6 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
                 mPresenter.onMapNotAvailable();
             }
         }
-    }
-
-    @Override
-    public void setLocation(LocationSource locationSource) {
-        map.setLocationSource(locationSource);
-        map.setMyLocationEnabled(true);
     }
 
     @Override
