@@ -349,7 +349,6 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
         }
 
         mLocationProviderClient = null;
-
         map = null;
 
         super.onStop();

@@ -315,7 +315,6 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
     @Override
     public void onStop()
     {
-
         // Stop asking for user location when view moves in background
         try
         {
@@ -331,7 +330,6 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
         }
 
         mLocationProviderClient = null;
-
         map = null;
 
         super.onStop();
