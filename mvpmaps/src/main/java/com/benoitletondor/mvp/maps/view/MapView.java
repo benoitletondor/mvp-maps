@@ -38,7 +38,7 @@ public interface MapView extends View
     /**
      * Request location updates from the location provider
      *
-     * @param locationRequest
+     * @param locationRequest the location request given to the location provider.
      */
     void requestLocationUpdates(LocationRequest locationRequest);
 
@@ -48,9 +48,9 @@ public interface MapView extends View
     void removeLocationUpdates();
 
     /**
-     * Updates the location source with {@param location}
+     * Updates the location source.
      *
-     * @param location
+     * @param location the location with which to update the location source
      */
     void updateUserLocation(Location location);
 }
