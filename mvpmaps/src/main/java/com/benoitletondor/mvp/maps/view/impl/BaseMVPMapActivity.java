@@ -1,11 +1,13 @@
 package com.benoitletondor.mvp.maps.view.impl;
 
-
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -18,8 +20,13 @@ import com.benoitletondor.mvp.maps.view.MapView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
@@ -29,7 +36,8 @@ import com.google.android.gms.maps.SupportMapFragment;
  *
  * @author Benoit LETONDOR
  */
-public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends MapView> extends BaseMVPActivity<P, V> implements MapView
+@SuppressLint("MissingPermission")
+public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends MapView> extends BaseMVPActivity<P, V> implements MapView, LocationSource
 {
     private final static String TAG = "BaseMVPMapActivity";
 
@@ -46,6 +54,32 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     @IdRes
     private int mMapContainerId = -1;
 
+    /**
+     * Play services client
+     */
+    @Nullable
+    private FusedLocationProviderClient mLocationProviderClient;
+
+    /**
+     * Location listener given by the mMap to send user location update.
+     * Will be null if location is not requested.
+     */
+    @Nullable
+    private LocationSource.OnLocationChangedListener mLocationChangeListener;
+
+    /**
+     * Map displayed by the activity. Loaded by {@link #loadMap()}. Children can use
+     * {@link #getMap()} to access it.
+     */
+    @Nullable
+    private GoogleMap mMap;
+
+    /**
+     * Listener for location update. Will be null if location is not requested.
+     */
+    @Nullable
+    private LocationCallback mLocationCallback;
+
 // ------------------------------------------>
 
     protected void onCreate(Bundle savedInstanceState, @IdRes int mapContainerId)
@@ -60,14 +94,70 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     {
         super.onCreate(savedInstanceState);
 
-        throw new RuntimeException("You should use the onCreate(Bundle, int) method for displaying a map");
+        throw new RuntimeException("You should use the onCreate(Bundle, int) method for displaying a mMap");
     }
 
     @Override
-    @NonNull
-    public FusedLocationProviderClient getFusedLocationProviderClient()
+    public void onResume()
     {
-        return LocationServices.getFusedLocationProviderClient(this);
+        super.onResume();
+
+        if( mTempLocationResult != DEFAULT_TEMP_LOCATION_RESULT && mPresenter != null )
+        {
+            if( mTempLocationResult == PackageManager.PERMISSION_GRANTED )
+            {
+                mPresenter.onLocationPermissionGranted();
+            }
+            else
+            {
+                mPresenter.onLocationPermissionDenied();
+            }
+
+            mTempLocationResult = DEFAULT_TEMP_LOCATION_RESULT;
+        }
+    }
+
+    @Override
+    public void onStop()
+    {
+        // Stop asking for user location when view moves in background
+        try
+        {
+            if( mLocationProviderClient != null && mLocationCallback != null )
+            {
+                Log.d(TAG, "onStop removeLocationUpdates");
+                mLocationProviderClient.removeLocationUpdates(mLocationCallback);
+            }
+        }
+        catch ( Exception e )
+        {
+            Log.e(TAG, "Error while removing location updates onStop", e);
+        }
+
+        mLocationProviderClient = null;
+        mLocationCallback = null;
+
+        if( mMap != null )
+        {
+            mMap.setMyLocationEnabled(false);
+            mMap.setLocationSource(null);
+        }
+        mMap = null;
+
+        super.onStop();
+    }
+
+// ------------------------------------------>
+
+    /**
+     * Can be used by children to access the displayed map.
+     *
+     * @return Displayed GoogleMap instance, or null if the map was not initialized or is not available
+     */
+    @Nullable
+    protected GoogleMap getMap()
+    {
+        return mMap;
     }
 
     @Override
@@ -75,7 +165,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     {
         if( mMapContainerId == -1 )
         {
-            throw new IllegalStateException("You must call super.onCreate(savedInstanceState, mapContainerId) to pass the container id for the map");
+            throw new IllegalStateException("You must call super.onCreate(savedInstanceState, mapContainerId) to pass the container id for the mMap");
         }
 
         final View view = findViewById(mMapContainerId);
@@ -95,7 +185,9 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
                 @Override
                 public void onMapReady(final GoogleMap googleMap)
                 {
-                    // If layout hasn't happen yet, just wait for it and then trigger onMapReady
+                    mMap = googleMap;
+
+                    // If layout hasn't happen yet, just wait for it and then trigger onMapLoaded
                     // FIXME this is very leak prone, find a better way?
                     if( view.getWidth() == 0 && view.getHeight() == 0 )
                     {
@@ -108,17 +200,17 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
 
                                 if( mPresenter != null )
                                 {
-                                    mPresenter.onMapReady(googleMap);
+                                    mPresenter.onMapLoaded();
                                 }
                             }
                         });
                     }
-                    // If layout has been made, call onMapReady directly
+                    // If layout has been made, call onMapLoaded directly
                     else
                     {
                         if( mPresenter != null )
                         {
-                            mPresenter.onMapReady(googleMap);
+                            mPresenter.onMapLoaded();
                         }
                     }
                 }
@@ -129,8 +221,90 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
             Log.e(TAG, "Play Services not available");
             if( mPresenter != null )
             {
-                mPresenter.onMapNotAvailable();
+                mPresenter.onErrorLoadingMap();
             }
+        }
+    }
+
+    @Override
+    public void activate(OnLocationChangedListener onLocationChangedListener)
+    {
+        if( mPresenter != null )
+        {
+            mPresenter.onLocationSourceActivated();
+        }
+
+        mLocationChangeListener = onLocationChangedListener;
+    }
+
+    @Override
+    public void deactivate()
+    {
+        if( mPresenter != null )
+        {
+            mPresenter.onLocationSourceDeactivated();
+        }
+
+        mLocationChangeListener = null;
+    }
+
+    @Override
+    public void requestLocationUpdates(LocationRequest locationRequest)
+    {
+        if( mLocationProviderClient != null && mLocationCallback != null )
+        {
+            mLocationProviderClient.requestLocationUpdates(locationRequest, mLocationCallback, null);
+        }
+    }
+
+    @Override
+    public void removeLocationUpdates()
+    {
+        if( mLocationProviderClient != null && mLocationCallback != null )
+        {
+            mLocationProviderClient.removeLocationUpdates(mLocationCallback);
+        }
+    }
+
+    @Override
+    public void enableUserLocation()
+    {
+        if( mMap != null )
+        {
+            mLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+            mLocationCallback = new LocationCallback()
+            {
+                @Override
+                public void onLocationResult(LocationResult locationResult)
+                {
+                    super.onLocationResult(locationResult);
+
+                    final Location location = locationResult.getLastLocation();
+
+                    if( mPresenter != null )
+                    {
+                        mPresenter.onLocationResult(location);
+                    }
+                }
+
+                @Override
+                public void onLocationAvailability(LocationAvailability locationAvailability)
+                {
+                    super.onLocationAvailability(locationAvailability);
+                }
+            };
+
+            mMap.setLocationSource(this);
+            mMap.setMyLocationEnabled(true);
+        }
+    }
+
+    @Override
+    public void updateUserLocation(Location location)
+    {
+        if( mLocationChangeListener != null )
+        {
+            mLocationChangeListener.onLocationChanged(location);
         }
     }
 
@@ -172,26 +346,6 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
             {
                 mTempLocationResult = grantResults[0];
             }
-        }
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-
-        if( mTempLocationResult != DEFAULT_TEMP_LOCATION_RESULT && mPresenter != null )
-        {
-            if( mTempLocationResult == PackageManager.PERMISSION_GRANTED )
-            {
-                mPresenter.onLocationPermissionGranted();
-            }
-            else
-            {
-                mPresenter.onLocationPermissionDenied();
-            }
-
-            mTempLocationResult = DEFAULT_TEMP_LOCATION_RESULT;
         }
     }
 }

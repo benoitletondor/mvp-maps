@@ -12,6 +12,8 @@ import com.benoitletondor.mvp.maps.sample.scene.fragment.base.impl.FragmentActiv
 import com.benoitletondor.mvp.maps.sample.scene.main.MainPresenter;
 import com.benoitletondor.mvp.maps.sample.scene.main.MainView;
 import com.benoitletondor.mvp.maps.view.impl.BaseMVPMapActivity;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.GoogleMap;
 
 import javax.inject.Inject;
 
@@ -58,6 +60,24 @@ public final class MainActivity extends BaseMVPMapActivity<MainPresenter, MainVi
 // ------------------------------------>
 
     @Override
+    public void onMapReady()
+    {
+        if( mPresenter != null )
+        {
+            mPresenter.onMapReady();
+        }
+    }
+
+    @Override
+    public void onMapUnavailable()
+    {
+        if( mPresenter != null )
+        {
+            mPresenter.onMapUnavailable();
+        }
+    }
+
+    @Override
     public void startFragmentActivity()
     {
         final Intent intent = new Intent(this, FragmentActivity.class);
@@ -72,5 +92,15 @@ public final class MainActivity extends BaseMVPMapActivity<MainPresenter, MainVi
             .setMessage(R.string.maps_not_available_alert_message)
             .setPositiveButton(android.R.string.ok, null)
             .show();
+    }
+
+    @Override
+    public void updateMapCamera(CameraUpdate cameraUpdate)
+    {
+        final GoogleMap map = getMap();
+        if( map != null )
+        {
+            map.animateCamera(cameraUpdate);
+        }
     }
 }

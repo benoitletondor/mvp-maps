@@ -1,6 +1,7 @@
 package com.benoitletondor.mvp.maps.sample.scene.main;
 
 import com.benoitletondor.mvp.maps.view.MapView;
+import com.google.android.gms.maps.CameraUpdate;
 
 /**
  * Main view, starting point of the application, displaying a map and a button to the fragment view
@@ -18,4 +19,11 @@ public interface MainView extends MapView
      * Show an alert explaining that map isn't available
      */
     void showMapNotAvailableAlert();
+
+    /**
+     * Update the map camera
+     *
+     * @param cameraUpdate the update to apply to the map camera
+     */
+    void updateMapCamera(CameraUpdate cameraUpdate);
 }

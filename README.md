@@ -21,7 +21,7 @@ This library provides implementation for views that use the [appcompat-v7 suppor
 **Add this line to your gradle file:**
 
 ```
-compile 'com.benoitletondor:mvp-maps:0.2'
+compile 'com.benoitletondor:mvp-maps:0.3'
 ```
 
 To use it, every `Presenter` of your app should extends `BaseMapPresenterImpl` and every view should extend either `BaseMVPMapActivity` or `BaseMVPMapFragment`.
@@ -48,6 +48,20 @@ public class MainActivity extends BaseMVPMapActivity<MainViewPresenter, MainView
 		super.onCreate(savedInstanceState, R.id.map_container);
 		setContentView(R.layout.activity_main);
 	}
+
+	@Override
+    public void onMapReady()
+    {
+        // Your map is available via the getMap() method and ready to be used
+        // You should probably call your presenter if you have some logic here
+    }
+
+    @Override
+    public void onMapUnavailable()
+    {
+        // Map is unavailable (check logcat for more details).
+        // You should probably call your presenter if you have some logic here
+    }
 }
 ```
 
@@ -56,35 +70,10 @@ And here's how the `MapPresenter` looks like:
 ```java
 public class MainViewPresenterImpl extends BaseMapPresenterImpl<MainView> implements MainViewPresenter
 {
-	/**
-	* Reference of the current map shown (don't forget to null it when onStop is called !)
-	*/
-	@Nullable
-	private GoogleMap mMap;
-
-	@Override
-	public void onStop()
-	{
-		// IMPORTANT: Don't forget to clear any instance of GoogleMap you have here to avoid leaks.
-		// It will be recreated at next view start
-		mMap = null;
-
-		super.onStop();
-	}
-
-	@Override
-	public void onMapAvailable(@NonNull GoogleMap map)
-	{
-		// You can store the map to perform actions on it later, like adding pins
-		// IMPORTANT: Don't forget to clear it when onStop is called !
-		mMap = map;
-	}
-
-	@Override
-	public void onMapNotAvailable()
-	{
-		// Show an error to the user
-	}
+	public MainViewPresenterImpl()
+    {
+        super(true); // Request user location
+    }
 
 	@NonNull
 	@Override
@@ -121,11 +110,16 @@ This sample app also shows how to use [Dagger 2](https://github.com/google/dagge
 
 ## TODO
 
-I still have to implement Junit and Espresso tests and run them with Travis, that's the reason it's 0.1 and not 1.0 yet.
+I still have to implement Junit and Espresso tests and run them with Travis, that's the reason it's 0.3 and not 1.0 yet.
+
+## Contributors
+
+- [Benoit Letondor](https://github.com/Benoitletondor)
+- [Marc-Alexandre Caroff](https://github.com/macaroff)
 
 ## License
 
-    Copyright 2017 Benoit LETONDOR
+    Copyright 2019 Benoit LETONDOR
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
