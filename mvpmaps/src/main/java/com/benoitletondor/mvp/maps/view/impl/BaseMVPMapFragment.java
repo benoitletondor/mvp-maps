@@ -59,7 +59,8 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
     private FusedLocationProviderClient mLocationProviderClient;
 
     /**
-     * Location listener gave by the map to send user location update
+     * Location listener gave by the map to send user location update.
+     * Will be null if location is not requested.
      */
     @Nullable
     private LocationSource.OnLocationChangedListener mLocationChangeListener;
@@ -71,30 +72,10 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
     private GoogleMap map;
 
     /**
-     * Listener for location update
+     * Listener for location update. Will be null if location is not requested.
      */
-    @NonNull
-    private final LocationCallback mLocationCallback = new LocationCallback()
-    {
-        @Override
-        public void onLocationResult(LocationResult locationResult)
-        {
-            super.onLocationResult(locationResult);
-
-            final Location location = locationResult.getLastLocation();
-
-            if( mPresenter != null )
-            {
-                mPresenter.onLocationResult(location);
-            }
-        }
-
-        @Override
-        public void onLocationAvailability(LocationAvailability locationAvailability)
-        {
-            super.onLocationAvailability(locationAvailability);
-        }
-    };
+    @Nullable
+    private LocationCallback mLocationCallback;
 
 // ------------------------------------------>
 
@@ -134,7 +115,7 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
         // Stop asking for user location when view moves in background
         try
         {
-            if( mLocationProviderClient != null )
+            if( mLocationProviderClient != null && mLocationCallback != null )
             {
                 Log.d(TAG, "onStop removeLocationUpdates");
                 mLocationProviderClient.removeLocationUpdates(mLocationCallback);
@@ -146,6 +127,7 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
         }
 
         mLocationProviderClient = null;
+        mLocationCallback = null;
         map = null;
 
         super.onStop();
@@ -162,12 +144,6 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
     protected GoogleMap getMap()
     {
         return map;
-    }
-
-    @NonNull
-    public FusedLocationProviderClient getFusedLocationProviderClient()
-    {
-        return LocationServices.getFusedLocationProviderClient(getContext());
     }
 
     @Override
@@ -256,7 +232,7 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
     @Override
     public void requestLocationUpdates(LocationRequest locationRequest)
     {
-        if( mLocationProviderClient != null )
+        if( mLocationProviderClient != null && mLocationCallback != null )
         {
             mLocationProviderClient.requestLocationUpdates(locationRequest, mLocationCallback, null);
         }
@@ -265,7 +241,7 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
     @Override
     public void removeLocationUpdates()
     {
-        if( mLocationProviderClient != null )
+        if( mLocationProviderClient != null && mLocationCallback != null )
         {
             mLocationProviderClient.removeLocationUpdates(mLocationCallback);
         }
@@ -277,6 +253,27 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
         if( map != null )
         {
             mLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+            mLocationCallback = new LocationCallback()
+            {
+                @Override
+                public void onLocationResult(LocationResult locationResult)
+                {
+                    super.onLocationResult(locationResult);
+
+                    final Location location = locationResult.getLastLocation();
+
+                    if( mPresenter != null )
+                    {
+                        mPresenter.onLocationResult(location);
+                    }
+                }
+
+                @Override
+                public void onLocationAvailability(LocationAvailability locationAvailability)
+                {
+                    super.onLocationAvailability(locationAvailability);
+                }
+            };
 
             map.setLocationSource(this);
             map.setMyLocationEnabled(true);

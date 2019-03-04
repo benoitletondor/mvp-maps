@@ -86,10 +86,9 @@ public final class SampleFragment extends BaseMVPMapFragment<SampleFragmentPrese
     public void updateMapCamera(CameraUpdate cameraUpdate)
     {
         final GoogleMap map = getMap();
-
         if( map != null )
         {
-            getMap().animateCamera(cameraUpdate);
+            map.animateCamera(cameraUpdate);
         }
     }
 }

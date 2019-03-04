@@ -98,10 +98,9 @@ public final class MainActivity extends BaseMVPMapActivity<MainPresenter, MainVi
     public void updateMapCamera(CameraUpdate cameraUpdate)
     {
         final GoogleMap map = getMap();
-
         if( map != null )
         {
-            getMap().animateCamera(cameraUpdate);
+            map.animateCamera(cameraUpdate);
         }
     }
 }
