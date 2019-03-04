@@ -14,5 +14,13 @@ public interface MainPresenter extends MapPresenter<MainView>
      */
     void onStartFragmentActivityButtonClicked();
 
-    void onMapAvailable();
+    /**
+     * Called when the map is available to use and displayed to the user
+     */
+    void onMapReady();
+
+    /**
+     * Called when the map not available due to an error loading it
+     */
+    void onMapUnavailable();
 }

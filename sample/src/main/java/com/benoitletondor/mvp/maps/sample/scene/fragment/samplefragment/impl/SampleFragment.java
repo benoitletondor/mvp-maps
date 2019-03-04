@@ -65,16 +65,25 @@ public final class SampleFragment extends BaseMVPMapFragment<SampleFragmentPrese
     }
 
     @Override
-    public void onMapAvailable()
+    public void onMapReady()
     {
         if( mPresenter != null )
         {
-            mPresenter.onMapAvailable();
+            mPresenter.onMapReady();
         }
     }
 
     @Override
-    public void animateMapCamera(CameraUpdate cameraUpdate)
+    public void onMapUnavailable()
+    {
+        if( mPresenter != null )
+        {
+            mPresenter.onMapUnavailable();
+        }
+    }
+
+    @Override
+    public void updateMapCamera(CameraUpdate cameraUpdate)
     {
         final GoogleMap map = getMap();
 

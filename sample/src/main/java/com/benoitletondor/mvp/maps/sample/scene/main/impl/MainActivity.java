@@ -60,11 +60,20 @@ public final class MainActivity extends BaseMVPMapActivity<MainPresenter, MainVi
 // ------------------------------------>
 
     @Override
-    public void onMapAvailable()
+    public void onMapReady()
     {
         if( mPresenter != null )
         {
-            mPresenter.onMapAvailable();
+            mPresenter.onMapReady();
+        }
+    }
+
+    @Override
+    public void onMapUnavailable()
+    {
+        if( mPresenter != null )
+        {
+            mPresenter.onMapUnavailable();
         }
     }
 
@@ -86,7 +95,7 @@ public final class MainActivity extends BaseMVPMapActivity<MainPresenter, MainVi
     }
 
     @Override
-    public void animateMapCamera(CameraUpdate cameraUpdate)
+    public void updateMapCamera(CameraUpdate cameraUpdate)
     {
         final GoogleMap map = getMap();
 

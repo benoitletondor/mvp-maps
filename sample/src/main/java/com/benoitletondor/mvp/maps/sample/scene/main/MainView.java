@@ -20,5 +20,10 @@ public interface MainView extends MapView
      */
     void showMapNotAvailableAlert();
 
-    void animateMapCamera(CameraUpdate cameraUpdate);
+    /**
+     * Update the map camera
+     *
+     * @param cameraUpdate the update to apply to the map camera
+     */
+    void updateMapCamera(CameraUpdate cameraUpdate);
 }

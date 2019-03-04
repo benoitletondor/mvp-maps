@@ -31,13 +31,13 @@ public final class SampleFragmentPresenterImpl extends BaseMapPresenterImpl<Samp
     }
 
     @Override
-    public void onMapAvailable()
+    public void onMapReady()
     {
-        //Whatever you want to do once the map is available
+        // Whatever you want to do once the map is available
     }
 
     @Override
-    public void onMapNotAvailable()
+    public void onMapUnavailable()
     {
         if( mView != null )
         {
@@ -68,7 +68,7 @@ public final class SampleFragmentPresenterImpl extends BaseMapPresenterImpl<Samp
             final CameraUpdate update = CameraUpdateFactory.newLatLngZoom(
                 new LatLng(location.getLatitude(), location.getLongitude()), 11f);
 
-            view.animateMapCamera(update);
+            view.updateMapCamera(update);
         }
     }
 }

@@ -116,6 +116,51 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
         throw new RuntimeException("You should use the onCreate(Bundle, int) method for displaying a map");
     }
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        if( mTempLocationResult != DEFAULT_TEMP_LOCATION_RESULT && mPresenter != null )
+        {
+            if( mTempLocationResult == PackageManager.PERMISSION_GRANTED )
+            {
+                mPresenter.onLocationPermissionGranted();
+            }
+            else
+            {
+                mPresenter.onLocationPermissionDenied();
+            }
+
+            mTempLocationResult = DEFAULT_TEMP_LOCATION_RESULT;
+        }
+    }
+
+    @Override
+    public void onStop()
+    {
+        // Stop asking for user location when view moves in background
+        try
+        {
+            if( mLocationProviderClient != null )
+            {
+                Log.d(TAG, "onStop removeLocationUpdates");
+                mLocationProviderClient.removeLocationUpdates(mLocationCallback);
+            }
+        }
+        catch ( Exception e )
+        {
+            Log.e(TAG, "Error while removing location updates onStop", e);
+        }
+
+        mLocationProviderClient = null;
+        map = null;
+
+        super.onStop();
+    }
+
+// ------------------------------------------>
+
     /**
      * Can be used by children to access the displayed map.
      *
@@ -125,23 +170,6 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     protected GoogleMap getMap()
     {
         return map;
-    }
-
-    /**
-     * Accesses the fused location provider client associated with this view
-     *
-     * @return a fused location provider, ready to be used by the presenter
-     */
-    @NonNull
-    private FusedLocationProviderClient getFusedLocationProviderClient()
-    {
-        return LocationServices.getFusedLocationProviderClient(this);
-    }
-
-    @Override
-    public void loadLocationProvider()
-    {
-        mLocationProviderClient = getFusedLocationProviderClient();
     }
 
     @Override
@@ -171,7 +199,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
                 {
                     map = googleMap;
 
-                    // If layout hasn't happen yet, just wait for it and then trigger onMapReady
+                    // If layout hasn't happen yet, just wait for it and then trigger onMapLoaded
                     // FIXME this is very leak prone, find a better way?
                     if( view.getWidth() == 0 && view.getHeight() == 0 )
                     {
@@ -184,17 +212,17 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
 
                                 if( mPresenter != null )
                                 {
-                                    mPresenter.onMapReady();
+                                    mPresenter.onMapLoaded();
                                 }
                             }
                         });
                     }
-                    // If layout has been made, call onMapReady directly
+                    // If layout has been made, call onMapLoaded directly
                     else
                     {
                         if( mPresenter != null )
                         {
-                            mPresenter.onMapReady();
+                            mPresenter.onMapLoaded();
                         }
                     }
                 }
@@ -205,7 +233,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
             Log.e(TAG, "Play Services not available");
             if( mPresenter != null )
             {
-                mPresenter.onMapNotAvailable();
+                mPresenter.onErrorLoadingMap();
             }
         }
     }
@@ -255,6 +283,8 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     {
         if( map != null )
         {
+            mLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
             map.setLocationSource(this);
             map.setMyLocationEnabled(true);
         }
@@ -308,48 +338,5 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
                 mTempLocationResult = grantResults[0];
             }
         }
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-
-        if( mTempLocationResult != DEFAULT_TEMP_LOCATION_RESULT && mPresenter != null )
-        {
-            if( mTempLocationResult == PackageManager.PERMISSION_GRANTED )
-            {
-                mPresenter.onLocationPermissionGranted();
-            }
-            else
-            {
-                mPresenter.onLocationPermissionDenied();
-            }
-
-            mTempLocationResult = DEFAULT_TEMP_LOCATION_RESULT;
-        }
-    }
-
-    @Override
-    public void onStop()
-    {
-        // Stop asking for user location when view moves in background
-        try
-        {
-            if( mLocationProviderClient != null )
-            {
-                Log.d(TAG, "onStop removeLocationUpdates");
-                mLocationProviderClient.removeLocationUpdates(mLocationCallback);
-            }
-        }
-        catch ( Exception e )
-        {
-            Log.e(TAG, "Error while removing location updates onStop", e);
-        }
-
-        mLocationProviderClient = null;
-        map = null;
-
-        super.onStop();
     }
 }

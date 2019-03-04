@@ -16,31 +16,12 @@ import com.google.android.gms.location.LocationRequest;
 public interface MapPresenter<V extends MapView> extends Presenter<V>
 {
     /**
-     * Called when the map is ready to be used
-     */
-    void onMapReady();
-
-    /**
-     * Called when the map is not available due to an error
-     */
-    void onMapNotAvailable();
-
-    /**
      * You should provide your location request here
      *
      * @return the location request used by the map
      */
     @NonNull
     LocationRequest getLocationRequest();
-
-    /**
-     * Called on a new location result from the location provider. There is no need to
-     * override this method since {@link com.benoitletondor.mvp.maps.presenter.impl.BaseMapPresenterImpl} already does
-     * to update the user location.
-     *
-     * @param location the new result location
-     */
-    void onLocationResult(@NonNull Location location);
 
     /**
      * Called when the user location change. The location is automatically updated on the map by
@@ -52,6 +33,27 @@ public interface MapPresenter<V extends MapView> extends Presenter<V>
     void onUserLocationChanged(@NonNull Location location);
 
 // ---------------------------------------->
+
+    /**
+     * Called when the map is ready to be used. You should not override this method
+     * since {@link com.benoitletondor.mvp.maps.presenter.impl.BaseMapPresenterImpl} already does it
+     */
+    void onMapLoaded();
+
+    /**
+     * Called when the map is not available due to an error. You should not override this method
+     * since {@link com.benoitletondor.mvp.maps.presenter.impl.BaseMapPresenterImpl} already does it
+     */
+    void onErrorLoadingMap();
+
+    /**
+     * Called on a new location result from the location provider. There is no need to
+     * override this method since {@link com.benoitletondor.mvp.maps.presenter.impl.BaseMapPresenterImpl} already does
+     * to update the user location.
+     *
+     * @param location the new result location
+     */
+    void onLocationResult(@NonNull Location location);
 
     /**
      * Method used by the {@link MapView} to send the permission result. There is no need to
