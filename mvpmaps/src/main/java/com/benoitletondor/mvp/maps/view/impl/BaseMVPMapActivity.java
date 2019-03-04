@@ -61,7 +61,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     private FusedLocationProviderClient mLocationProviderClient;
 
     /**
-     * Location listener given by the map to send user location update.
+     * Location listener given by the mMap to send user location update.
      * Will be null if location is not requested.
      */
     @Nullable
@@ -72,7 +72,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
      * {@link #getMap()} to access it.
      */
     @Nullable
-    private GoogleMap map;
+    private GoogleMap mMap;
 
     /**
      * Listener for location update. Will be null if location is not requested.
@@ -94,7 +94,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     {
         super.onCreate(savedInstanceState);
 
-        throw new RuntimeException("You should use the onCreate(Bundle, int) method for displaying a map");
+        throw new RuntimeException("You should use the onCreate(Bundle, int) method for displaying a mMap");
     }
 
     @Override
@@ -136,7 +136,13 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
 
         mLocationProviderClient = null;
         mLocationCallback = null;
-        map = null;
+
+        if( mMap != null )
+        {
+            mMap.setMyLocationEnabled(false);
+            mMap.setLocationSource(null);
+        }
+        mMap = null;
 
         super.onStop();
     }
@@ -151,7 +157,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     @Nullable
     protected GoogleMap getMap()
     {
-        return map;
+        return mMap;
     }
 
     @Override
@@ -159,7 +165,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     {
         if( mMapContainerId == -1 )
         {
-            throw new IllegalStateException("You must call super.onCreate(savedInstanceState, mapContainerId) to pass the container id for the map");
+            throw new IllegalStateException("You must call super.onCreate(savedInstanceState, mapContainerId) to pass the container id for the mMap");
         }
 
         final View view = findViewById(mMapContainerId);
@@ -179,7 +185,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
                 @Override
                 public void onMapReady(final GoogleMap googleMap)
                 {
-                    map = googleMap;
+                    mMap = googleMap;
 
                     // If layout hasn't happen yet, just wait for it and then trigger onMapLoaded
                     // FIXME this is very leak prone, find a better way?
@@ -263,7 +269,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
     @Override
     public void enableUserLocation()
     {
-        if( map != null )
+        if( mMap != null )
         {
             mLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
             mLocationCallback = new LocationCallback()
@@ -288,8 +294,8 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
                 }
             };
 
-            map.setLocationSource(this);
-            map.setMyLocationEnabled(true);
+            mMap.setLocationSource(this);
+            mMap.setMyLocationEnabled(true);
         }
     }
 
