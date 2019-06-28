@@ -1,7 +1,8 @@
 package com.benoitletondor.mvp.maps.sample.scene.fragment.samplefragment.impl;
 
 import android.location.Location;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.benoitletondor.mvp.maps.presenter.impl.BaseMapPresenterImpl;
 import com.benoitletondor.mvp.maps.sample.scene.fragment.samplefragment.SampleFragmentPresenter;

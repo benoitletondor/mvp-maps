@@ -2,15 +2,17 @@ package com.benoitletondor.mvp.maps.view.impl;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.benoitletondor.mvp.core.view.impl.BaseMVPFragment;
 import com.benoitletondor.mvp.maps.presenter.MapPresenter;
@@ -24,6 +26,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -155,12 +158,17 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
     @Override
     public void loadMap()
     {
+        if( getActivity() == null )
+        {
+            return;
+        }
+
         final View view = getActivity().findViewById(mMapContainerId);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(mMapContainerId);
         if( mapFragment == null )
         {
-            mapFragment = SupportMapFragment.newInstance();
+            mapFragment = getMapFragmentInstance();
             FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
             fragmentTransaction.replace(mMapContainerId, mapFragment);
             fragmentTransaction.commitAllowingStateLoss();
@@ -213,6 +221,20 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
         }
     }
 
+    @NonNull
+    private SupportMapFragment getMapFragmentInstance()
+    {
+        final GoogleMapOptions options = getGoogleMapOptions();
+        if( options != null )
+        {
+            return SupportMapFragment.newInstance(options);
+        }
+        else
+        {
+            return SupportMapFragment.newInstance();
+        }
+    }
+
     @Override
     public void activate(OnLocationChangedListener onLocationChangedListener)
     {
@@ -256,9 +278,9 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
     @Override
     public void enableUserLocation()
     {
-        if( mMap != null )
+        if( mMap != null && getContext() != null )
         {
-            mLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+            mLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
             mLocationCallback = new LocationCallback()
             {
                 @Override
@@ -298,7 +320,13 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
     @Override
     public void requestLocationPermission()
     {
-        if( ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED )
+        final Context context = getContext();
+        if( context == null )
+        {
+            return;
+        }
+
+        if( ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED )
         {
             if( mPresenter != null )
             {
@@ -334,5 +362,13 @@ public abstract class BaseMVPMapFragment<P extends MapPresenter<V>, V extends Ma
                 mTempLocationResult = grantResults[0];
             }
         }
+    }
+
+    @Nullable
+    @Override
+    public GoogleMapOptions getGoogleMapOptions()
+    {
+        // Can be override be children to send specific options
+        return null;
     }
 }

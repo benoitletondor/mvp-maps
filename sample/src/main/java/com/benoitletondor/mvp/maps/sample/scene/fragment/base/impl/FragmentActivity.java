@@ -3,7 +3,7 @@ package com.benoitletondor.mvp.maps.sample.scene.fragment.base.impl;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.benoitletondor.mvp.core.presenter.loader.PresenterFactory;
+import com.benoitletondor.mvp.core.presenter.PresenterFactory;
 import com.benoitletondor.mvp.maps.sample.R;
 import com.benoitletondor.mvp.maps.sample.scene.fragment.base.FragmentPresenter;
 import com.benoitletondor.mvp.maps.sample.scene.fragment.base.FragmentView;
@@ -50,11 +50,9 @@ public final class FragmentActivity extends BaseMVPActivity<FragmentPresenter, F
     {
         int id = item.getItemId();
 
-        switch ( id )
-        {
-            case android.R.id.home:
-                finish();
-                return true;
+        if (id == android.R.id.home) {
+            finish();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

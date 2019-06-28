@@ -1,8 +1,8 @@
 package com.benoitletondor.mvp.maps.sample.scene.fragment.samplefragment.injection;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
-import com.benoitletondor.mvp.core.presenter.loader.PresenterFactory;
+import com.benoitletondor.mvp.core.presenter.PresenterFactory;
 import com.benoitletondor.mvp.maps.sample.scene.fragment.samplefragment.SampleFragmentPresenter;
 import com.benoitletondor.mvp.maps.sample.scene.fragment.samplefragment.impl.SampleFragmentPresenterImpl;
 
