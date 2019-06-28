@@ -16,6 +16,7 @@ import com.benoitletondor.mvp.maps.sample.scene.main.MainView;
 import com.benoitletondor.mvp.maps.view.impl.BaseMVPMapActivity;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 
 import javax.inject.Inject;
 
@@ -58,6 +59,12 @@ public final class MainActivity extends BaseMVPMapActivity<MainPresenter, MainVi
     protected PresenterFactory<MainPresenter> getPresenterFactory()
     {
         return mPresenterFactory;
+    }
+
+    @Override
+    public GoogleMapOptions getGoogleMapOptions()
+    {
+        return new GoogleMapOptions().zOrderOnTop(true);
     }
 
 // ------------------------------------>

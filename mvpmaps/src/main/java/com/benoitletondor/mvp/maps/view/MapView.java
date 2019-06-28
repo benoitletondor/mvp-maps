@@ -2,8 +2,11 @@ package com.benoitletondor.mvp.maps.view;
 
 import android.location.Location;
 
+import androidx.annotation.Nullable;
+
 import com.benoitletondor.mvp.core.view.View;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.GoogleMapOptions;
 
 /**
  * Base interface for a view displaying a map.
@@ -21,6 +24,14 @@ public interface MapView extends View
      * Called when the map is not available due to an error
      */
     void onMapUnavailable();
+
+    /**
+     * Called when creating the map to get the options to pass to the map
+     *
+     * @return specific options if the view needs them, null otherwise
+     */
+    @Nullable
+    GoogleMapOptions getGoogleMapOptions();
 
 // ------------------------------------------------>
 

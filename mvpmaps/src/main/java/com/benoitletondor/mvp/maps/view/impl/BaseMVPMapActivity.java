@@ -27,6 +27,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -173,7 +174,7 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(mMapContainerId);
         if( mapFragment == null )
         {
-            mapFragment = SupportMapFragment.newInstance();
+            mapFragment = getMapFragmentInstance();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(mMapContainerId, mapFragment);
             fragmentTransaction.commitAllowingStateLoss();
@@ -224,6 +225,20 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
             {
                 mPresenter.onErrorLoadingMap();
             }
+        }
+    }
+
+    @NonNull
+    private SupportMapFragment getMapFragmentInstance()
+    {
+        final GoogleMapOptions options = getGoogleMapOptions();
+        if( options != null )
+        {
+            return SupportMapFragment.newInstance(options);
+        }
+        else
+        {
+            return SupportMapFragment.newInstance();
         }
     }
 
@@ -348,5 +363,13 @@ public abstract class BaseMVPMapActivity<P extends MapPresenter<V>, V extends Ma
                 mTempLocationResult = grantResults[0];
             }
         }
+    }
+
+    @Nullable
+    @Override
+    public GoogleMapOptions getGoogleMapOptions()
+    {
+        // Can be override be children to send specific options
+        return null;
     }
 }
