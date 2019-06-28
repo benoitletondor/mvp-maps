@@ -2,12 +2,14 @@ package com.benoitletondor.mvp.maps.sample.scene.fragment.samplefragment.impl;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.benoitletondor.mvp.core.presenter.loader.PresenterFactory;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+
+import com.benoitletondor.mvp.core.presenter.PresenterFactory;
 import com.benoitletondor.mvp.maps.sample.R;
 import com.benoitletondor.mvp.maps.sample.scene.fragment.samplefragment.SampleFragmentPresenter;
 import com.benoitletondor.mvp.maps.sample.scene.fragment.samplefragment.SampleFragmentView;
@@ -49,6 +51,7 @@ public final class SampleFragment extends BaseMVPMapFragment<SampleFragmentPrese
     }
 
     @Override
+    @NonNull
     protected PresenterFactory<SampleFragmentPresenter> getPresenterFactory()
     {
         return mPresenterFactory;
@@ -57,6 +60,11 @@ public final class SampleFragment extends BaseMVPMapFragment<SampleFragmentPrese
     @Override
     public void showMapNotAvailableAlert()
     {
+        if( getContext() == null )
+        {
+            return;
+        }
+
         new AlertDialog.Builder(getContext())
             .setTitle(R.string.maps_not_available_alert_title)
             .setMessage(R.string.maps_not_available_alert_message)

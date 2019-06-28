@@ -1,7 +1,8 @@
 package com.benoitletondor.mvp.maps.sample.injection;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.benoitletondor.mvp.maps.sample.App;
 

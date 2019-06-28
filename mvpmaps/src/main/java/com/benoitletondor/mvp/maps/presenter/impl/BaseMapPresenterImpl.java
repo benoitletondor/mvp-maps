@@ -1,8 +1,9 @@
 package com.benoitletondor.mvp.maps.presenter.impl;
 
 import android.location.Location;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.benoitletondor.mvp.core.presenter.impl.BasePresenterImpl;
 import com.benoitletondor.mvp.maps.presenter.MapPresenter;
@@ -46,7 +47,6 @@ public abstract class BaseMapPresenterImpl<V extends MapView> extends BasePresen
         mNeedLocation = needGeolocation;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onStart(boolean viewCreated)
     {

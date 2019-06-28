@@ -3,10 +3,12 @@ package com.benoitletondor.mvp.maps.sample.scene.main.impl;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 
-import com.benoitletondor.mvp.core.presenter.loader.PresenterFactory;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+
+import com.benoitletondor.mvp.core.presenter.PresenterFactory;
 import com.benoitletondor.mvp.maps.sample.R;
 import com.benoitletondor.mvp.maps.sample.scene.fragment.base.impl.FragmentActivity;
 import com.benoitletondor.mvp.maps.sample.scene.main.MainPresenter;
@@ -52,6 +54,7 @@ public final class MainActivity extends BaseMVPMapActivity<MainPresenter, MainVi
     }
 
     @Override
+    @NonNull
     protected PresenterFactory<MainPresenter> getPresenterFactory()
     {
         return mPresenterFactory;
