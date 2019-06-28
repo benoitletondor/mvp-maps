@@ -14,14 +14,14 @@ It provides base classes for `MapPresenter` and 2 differents kind of `MapView` i
 
 ## Dependencies
 
-This library provides implementation for views that use the [appcompat-v7 support library](https://developer.android.com/topic/libraries/support-library/features.html), and is based on [Google Play Services](https://developers.google.com/android/guides/overview) Maps and Location. It has a strong dependency on them. 
+This library provides implementation for views that use the [appcompat](https://developer.android.com/jetpack/androidx/releases/appcompat), and is based on [Google Play Services](https://developers.google.com/android/guides/overview) Maps and Location. It has a strong dependency on them. 
 
 ## How to use
 
 **Add this line to your gradle file:**
 
 ```
-compile 'com.benoitletondor:mvp-maps:0.3'
+implementation 'com.benoitletondor:mvp-maps:0.4'
 ```
 
 To use it, every `Presenter` of your app should extends `BaseMapPresenterImpl` and every view should extend either `BaseMVPMapActivity` or `BaseMVPMapFragment`.
@@ -110,7 +110,7 @@ This sample app also shows how to use [Dagger 2](https://github.com/google/dagge
 
 ## TODO
 
-I still have to implement Junit and Espresso tests and run them with Travis, that's the reason it's 0.3 and not 1.0 yet.
+I still have to implement Junit and Espresso tests and run them with Travis, that's the reason it's 0.4 and not 1.0 yet.
 
 ## Contributors
 
